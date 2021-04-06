@@ -1,5 +1,3 @@
-
-
 import 'package:date_picker_timeline/date_widget.dart';
 import 'package:date_picker_timeline/extra/color.dart';
 import 'package:date_picker_timeline/extra/style.dart';
@@ -40,7 +38,7 @@ class DatePicker extends StatefulWidget {
   final TextStyle dateTextStyle;
 
   /// Current Selected Date
-  final DateTime?/*?*/ initialSelectedDate;
+  final DateTime? /*?*/ initialSelectedDate;
 
   /// Contains the list of inactive dates.
   /// All the dates defined in this List will be deactivated
@@ -90,7 +88,10 @@ class DatePicker extends StatefulWidget {
 class _DatePickerState extends State<DatePicker> {
   DateTime? _currentDate;
 
-  ScrollController _controller = ScrollController();
+  //45 here is to cause the scroller to move the first item into view
+  ScrollController _controller = ScrollController(
+    initialScrollOffset: 45,
+  );
 
   late final TextStyle selectedDateStyle;
   late final TextStyle selectedMonthStyle;
@@ -112,9 +113,9 @@ class _DatePickerState extends State<DatePicker> {
     }
 
     this.selectedDateStyle =
-      widget.dateTextStyle.copyWith(color: widget.selectedTextColor);
+        widget.dateTextStyle.copyWith(color: widget.selectedTextColor);
     this.selectedMonthStyle =
-      widget.monthTextStyle.copyWith(color: widget.selectedTextColor);
+        widget.monthTextStyle.copyWith(color: widget.selectedTextColor);
     this.selectedDayStyle =
         widget.dayTextStyle.copyWith(color: widget.selectedTextColor);
 
@@ -134,7 +135,7 @@ class _DatePickerState extends State<DatePicker> {
       height: widget.height,
       child: ListView.builder(
         itemCount: widget.daysCount,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: Axis.vertical,
         controller: _controller,
         itemBuilder: (context, index) {
           // get the date object based on the index position
@@ -270,6 +271,9 @@ class DatePickerController {
         _datePickerState!.widget.startDate.day);
 
     int offset = date.difference(startDate).inDays;
-    return (offset * _datePickerState!.widget.width) + (offset * 6);
+    //Note the -1 offset was to fix a problem when scrolling far down
+    //the list
+    return (offset * (_datePickerState!.widget.height - 1)) +
+        (_datePickerState!.widget.height / 2);
   }
 }
